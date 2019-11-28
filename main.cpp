@@ -4,7 +4,7 @@
 
 int main(int argc, char* args[])
 {
-  Table table = Table();
+  Table::init();
   std::string command = "";
 
   std::cout << "==================================================================\n";
@@ -16,8 +16,9 @@ int main(int argc, char* args[])
   while (command.compare("exit") != 0)
   {
     std::getline(std::cin, command);
-    table.handleCommand(command);
+    Table::handleCommand(command);
   }
 
+  Table::close();
   return 0;
 }
