@@ -1,12 +1,9 @@
 #include "table.h"
 #include <iostream>
-#include <cctype>
+#include "utility.h"
 
 std::vector<Element*> Table::table;
 std::vector<Method*> Table::methods;
-
-static void doNothing(std::vector<std::string>) {}
-bool checkstrnocase(std::string & str1, std::string &str2);
 
 void Table::init()
 {
@@ -20,77 +17,92 @@ void Table::close()
 }
 
 /*
- * Table::displayElement
- * ---------------------
- * Use 'display help' ;)
+ * =============================
+ * PUBLIC FUNCTIONS
+ * =============================
+ * Functions for everyone to use
+ *
  */
-void Table::displayElement(std::vector<std::string> args)
-{
-  try
-  {
-    int atomicNumber = std::stoi(args.at(0));
 
-    auto expression = [] (Element* elm, int num) -> bool {return elm->atomicNumber == num;};
-    auto error = [] (int num) {std::cout << "Could not find element with atomic number " << num << "\n";};
-    searchElement<int>(atomicNumber, expression, error);
-  }
-  catch (std::invalid_argument)
-  {
-    std::string query = args.at(0);
-    if (query.length() <= 2)
-    {
-      auto expression = [] (Element* elm, std::string str) -> bool {return elm->symbol.compare(str) == 0;};
-      auto error = [] (std::string str) {std::cout << "Could not find element with symbol " << str << "\n";};
-      searchElement<std::string>(query, expression, error);
-    }
-    else
-    {
-      auto expression = [] (Element* elm, std::string str) -> bool {return checkstrnocase(elm->name, str);};
-      auto error = [] (std::string str) {std::cout << "Could not find element with name " << str << "\n";};
-      searchElement<std::string>(query, expression, error);
-    }
-  }
-}
+ /*
+  * Table::handleCommand
+  * --------------------
+  * Recieve input and run a command
+  * --------------------
+  * std::string command | A command name plus all the arguments needed for it
+  */
+ void Table::handleCommand(std::string command)
+ {
+   std::cout << "\n"; // Separate output from what user typed
+
+   std::vector<std::string> args = seperateString(command, " ");
+   std::string function = args.at(0);
+
+   args.erase(args.begin());
+   bool foundFunc = false;
+   for (auto method : methods)
+   {
+     if (function.compare(method->name) == 0)
+     {
+       foundFunc = true;
+       if (args.size() < method->argc) // Missing arguments
+         std::cout << "Missing a parameter. For help try '" << method->name << " help'\n";
+       else
+         if (args.size() > 0)
+           if (args.at(0).compare("help") == 0) // Argument is help
+             method->help();
+           else method->method(args);
+         else // Call function normally
+           method->method(args);
+
+       break;
+     }
+   }
+   if (!foundFunc)
+     std::cout << "Could not process command '" << function << "'\n";
+
+   std::cout << "\n";
+ }
 
 /*
- * searchElement
+ * getElement
  * -------------
- * NOTE: This function will probably be changed and edited to getElement in a future commit
- * Helper function for Table::displayElement
+ * Use a query of integer or string to find an element
  * -------------
  * Params
  * T query                         | What the search term is
  * bool (*expression)(Element*, T) | The expression that will check if the element is the same as the search term
- * void (*error)(T)                | What to display if the element is not found
  */
-template <typename T>
-void Table::searchElement(T query, bool (*expression)(Element*, T), void (*error)(T))
+template <typename T> Element* Table::getElement(T query, bool (*expression)(Element*, T))
 {
-  bool foundElm = false;
   for (auto elm : table)
-  {
     if (expression(elm, query))
-    {
-      foundElm = true;
-      printElement(elm);
-      break;
-    }
-  }
-  if (!foundElm)
-    error(query);
+      return elm;
+
+  return NULL;
 }
 
 /*
- * displayElementHelp
- * ------------------
- * The help function for Table::displayElement()
+ * ===========================
+ * PRINT COMMANDS
+ * ===========================
+ * Output stuff to the console
+ *
  */
-static void displayElementHelp()
+
+/*
+ * Table::printElement
+ * -------------------
+ * Output a single element to the console
+ * -------------------
+ * Params
+ * Element* elm | Element that you want to output
+ */
+void Table::printElement(Element* elm)
 {
-  std::cout << "Find an element and display use information\n\n";
-  std::cout << "This command takes one argument:\n";
-  std::cout << "\tA number for atomic number\t\t\tex. 'findElement 6'\n";
-  std::cout << "\tText for either element name or element symbol\tex. 'findElement H' or 'findElement Hydrogen'\n\n";
+  std::cout << elm->name << " (" << elm->symbol << ")\n";
+  std::cout << "Atomic Number: " << elm->atomicNumber << "\n";
+  std::cout << "Period: " << elm->period << "\tGroup: " << elm->group << "\n\n";
 }
 
 /*
@@ -102,62 +114,6 @@ void Table::printElements()
 {
   for (auto elm : table)
     printElement(elm);
-}
-
-/*
- * Table::handleCommand
- * --------------------
- * Recieve input and run a command
- * --------------------
- * std::string command | A command name plus all the arguments needed for it
- */
-void Table::handleCommand(std::string command)
-{
-  std::cout << "\n"; // Separate output from what user typed
-
-  std::vector<std::string> args;
-  std::string arg = "";
-  std::string function = "";
-
-  // Get the args
-  for (auto letter : command)
-  {
-    if (letter == ' ')
-    {
-      args.push_back(arg);
-      arg = "";
-    }
-    else
-      arg += letter;
-  }
-  args.push_back(arg);
-
-  // Figure out the function
-  function = args.at(0);
-  args.erase(args.begin());
-  bool foundFunc = false;
-  for (auto method : methods)
-  {
-    if (function.compare(method->name) == 0)
-    {
-      foundFunc = true;
-      if (args.size() < method->argc) // Missing arguments
-        std::cout << "Missing a parameter. For help try '" << method->name << " help'\n";
-      else
-        if (args.size() > 0)
-          if (args.at(0).compare("help") == 0) // Argument is help
-            method->help();
-          else method->method(args);
-        else // Call function normally
-          method->method(args);
-
-      break;
-    }
-  }
-  if (!foundFunc)
-    std::cout << "Could not process command '" << function << "'\n";
-
-  std::cout << "\n";
 }
 
 /*
@@ -179,32 +135,76 @@ void Table::helpHelp(std::vector<std::string> args)
 }
 
 /*
- * Table::printElement
- * -------------------
- * Output a single element to the console
- * -------------------
- * Params
- * Element* elm | Element that you want to output
+ * ===============================
+ * COMMANDS
+ * ===============================
+ * Methods that the user will call
  */
-void Table::printElement(Element* elm)
-{
-  std::cout << elm->name << " (" << elm->symbol << ")\n";
-  std::cout << "Atomic Number: " << elm->atomicNumber << "\n";
-  std::cout << "Period: " << elm->period << "\tGroup: " << elm->group << "\n\n";
-}
 
-// Copied this over from https://thispointer.com/c-case-insensitive-string-comparison-using-stl-c11-boost-library/
-bool checkstrnocase(std::string & str1, std::string &str2)
+/*
+ * Table::displayElement
+ * ---------------------
+ * Use 'display help' ;)
+ */
+void Table::displayElement(std::vector<std::string> args)
 {
-	return ((str1.size() == str2.size()) && std::equal(str1.begin(), str1.end(), str2.begin(), [](char & c1, char & c2){
-							return (c1 == c2 || std::toupper(c1) == std::toupper(c2));
-								}));
+  // See if the argument is a number
+  try
+  {
+    int atomicNumber = std::stoi(args.at(0));
+    auto expression = [] (Element* elm, int num) -> bool {return elm->atomicNumber == num;};
+    Element* elm = getElement<int>(atomicNumber, expression);
+
+    if (elm)
+      printElement(elm);
+    else
+      std::cout << "Could not find element with atomic number " << atomicNumber << "\n";
+  }
+  catch (std::invalid_argument)
+  {
+    // See if the argument is a symbol
+    std::string query = args.at(0);
+    if (query.length() <= 2)
+    {
+      auto expression = [] (Element* elm, std::string str) -> bool {return elm->symbol.compare(str) == 0;};
+      Element* elm = getElement<std::string>(query, expression);
+
+      if (elm)
+        printElement(elm);
+      else
+        std::cout << "Could not find element with symbol " << query << "\n";
+    }
+    // Argument is the full element name
+    else
+    {
+      auto expression = [] (Element* elm, std::string str) -> bool {return checkstrnocase(elm->name, str);};
+      Element* elm = getElement<std::string>(query, expression);
+
+      if (elm)
+        printElement(elm);
+      else
+        std::cout << "Could not find element with name " << query << "\n";
+    }
+  }
 }
 
 /*
- *
- * ADD METHOD METHODS
+ * displayElementHelp
  * ------------------
+ * The help function for Table::displayElement()
+ */
+static void displayElementHelp()
+{
+  std::cout << "Find an element and display useful information\n\n";
+  std::cout << "This command takes one argument:\n";
+  std::cout << "\tA number for atomic number\t\t\tex. 'findElement 6'\n";
+  std::cout << "\tText for either element name or element symbol\tex. 'findElement H' or 'findElement Hydrogen'\n\n";
+}
+
+/*
+ * =================================================
+ * ADD METHOD METHODS
+ * =================================================
  * Create methods and add them to the methods vector
  *
  */
@@ -245,9 +245,9 @@ void Table::addMethods()
 }
 
 /*
- *
+ * ================================================
  * ADD ELEMENT METHODS
- * -------------------
+ * ================================================
  * Create elements and add them to the table vector
  *
  */
@@ -402,6 +402,13 @@ void Table::addElements()
   addElement("Tennessine", "Ts", 117, 7, 17);
   addElement("Oganesson", "Og", 118, 7, 18);
 }
+
+/*
+ * ==========================================================
+ * UNCATEGORIZED
+ * ==========================================================
+ * Doesn't exactly belong in another section so it goes here!
+ */
 
 /*
  * Table::destroy
