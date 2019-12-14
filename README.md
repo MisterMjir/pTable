@@ -3,7 +3,7 @@
 [![GitHub All Releases](https://img.shields.io/github/downloads/mistermjir/pTable/total?style=flat)](https://github.com/MisterMjir/pTable/releases)
 [![GitHub license](https://img.shields.io/github/license/MisterMjir/pTable?style=flat)](https://github.com/MisterMjir/pTable/blob/master/LICENSE.md)
 [![GitHub repo size](https://img.shields.io/github/repo-size/mistermjir/pTable)]("https://github.com/MisterMjir/pTable")
-![Codacy grade](https://img.shields.io/codacy/grade/28567a324ef94003b625b71075e82b35?logo=codacy)
+[![Codacy grade](https://img.shields.io/codacy/grade/28567a324ef94003b625b71075e82b35?logo=codacy)](https://app.codacy.com/manual/MisterMjir/pTable/dashboard)
 
 A console Periodic Table tool
 
