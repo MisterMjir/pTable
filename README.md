@@ -14,4 +14,3 @@ A console Periodic Table tool
 
 ## Fine Print
 - Currently doesn't have much functionality... (more features are planned!)
-- This will be a shared library when finished
