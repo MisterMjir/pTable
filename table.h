@@ -13,14 +13,14 @@ public:
   static void close();
 
   // Member functions
-  static void handleCommand(std::string command);
+  static void handleCommand(const std::string &command);
   template <typename T> static Element* getElement(T query, bool (*expression)(Element*, T));
-  static Element* queryElement(std::string arg);
+  static Element* queryElement(const std::string &arg);
 
   // Print commands
   static void printElement(Element*);
   static void printElements();
-  static void helpHelp(std::vector<std::string> args);
+  static void helpHelp(const std::vector<std::string> &args);
 private:
   Table();
   ~Table();
@@ -28,14 +28,14 @@ private:
 
   // Add Elements
   static void addElements();
-  static void addElement(std::string name, std::string symbol, int atomicNumber, int period, int group, float electronegativity);
+  static void addElement(const std::string &name, const std::string &symbol, int atomicNumber, int period, int group, float electronegativity);
   // Add Methods
-  static void addMethod(std::string name, void (*method)(std::vector<std::string>), int argc, std::string info, void (*help)());
+  static void addMethod(const std::string &name, void (*method)(const std::vector<std::string> &), int argc, const std::string &info, void (*help)());
   static void addMethods();
 
   // Commands
-  static void displayElement(std::vector<std::string> args);
-  static void compareElements(std::vector<std::string> args);
+  static void displayElement(const std::vector<std::string> &args);
+  static void compareElements(const std::vector<std::string> &args);
 
   // Data Members
   static std::vector<Element*> table;

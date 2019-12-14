@@ -7,7 +7,7 @@
 struct Method
 {
   std::string name;
-  void (*method)(std::vector<std::string>);
+  void (*method)(const std::vector<std::string> &);
   unsigned int argc;
   std::string info;
   void (*help)();

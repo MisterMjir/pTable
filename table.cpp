@@ -31,7 +31,7 @@ void Table::close()
   * --------------------
   * std::string command | A command name plus all the arguments needed for it
   */
- void Table::handleCommand(std::string command)
+ void Table::handleCommand(const std::string &command)
  {
    std::cout << "\n"; // Separate output from what user typed
 
@@ -95,7 +95,7 @@ template <typename T> Element* Table::getElement(T query, bool (*expression)(Ele
  * Params
  * std::string arg | Can be integer (atomic number), element symbol (case sensitive), or element name (case insensitive)
  */
-Element* Table::queryElement(std::string arg)
+Element* Table::queryElement(const std::string &arg)
 {
   try
   {
@@ -171,7 +171,7 @@ void Table::printElements()
  * Params
  * std::vector<std::string> args | Arguments param required by Method struct
  */
-void Table::helpHelp(std::vector<std::string> args)
+void Table::helpHelp(const std::vector<std::string> &args)
 {
   std::cout << "Run a command by using 'CommandName arguments' (case-sensitive)\nFor more information about a command run 'CommandName help'\n\n";
   std::cout << "List of commands:\n";
@@ -193,7 +193,7 @@ void Table::helpHelp(std::vector<std::string> args)
  * ---------------------
  * Use 'display help' ;)
  */
-void Table::displayElement(std::vector<std::string> args)
+void Table::displayElement(const std::vector<std::string> &args)
 {
   Element* elm = queryElement(args.at(0));
   if (elm)
@@ -219,7 +219,7 @@ static void displayElementHelp()
  * ---------------
  * Use 'compare help' ;)
  */
-void Table::compareElements(std::vector<std::string> args)
+void Table::compareElements(const std::vector<std::string> &args)
 {
   std::vector<std::string> subCommands;
   subCommands.push_back("all");
@@ -292,7 +292,7 @@ static void compareElementsHelp()
  * std::string info                         | A short blurb on what the function does
  * void (*help)()                           | The method to call if the argument is 'help', can be NULL if argc is 0
  */
-void Table::addMethod(std::string name, void (*method)(std::vector<std::string>), int argc, std::string info, void (*help)())
+void Table::addMethod(const std::string &name, void (*method)(const std::vector<std::string> &), int argc, const std::string &info, void (*help)())
 {
   Method* newMethod = new Method;
   newMethod->name = name;
@@ -336,7 +336,7 @@ void Table::addMethods()
  * int period         | The period of the element
  * int group          | The group of the element
  */
-void Table::addElement(std::string name, std::string symbol, int atomicNumber, int period, int group, float electronegativity)
+void Table::addElement(const std::string &name, const std::string &symbol, int atomicNumber, int period, int group, float electronegativity)
 {
   Element* elm = new Element;
   elm->name = name;
