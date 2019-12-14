@@ -15,6 +15,7 @@ public:
   // Member functions
   static void handleCommand(std::string command);
   template <typename T> static Element* getElement(T query, bool (*expression)(Element*, T));
+  static Element* queryElement(std::string arg);
 
   // Print commands
   static void printElement(Element*);
@@ -24,16 +25,17 @@ private:
   Table();
   ~Table();
   static void destroy();
-  
+
   // Add Elements
   static void addElements();
-  static void addElement(std::string name, std::string symbol, int atomicNumber, int period, int group);
+  static void addElement(std::string name, std::string symbol, int atomicNumber, int period, int group, float electronegativity);
   // Add Methods
   static void addMethod(std::string name, void (*method)(std::vector<std::string>), int argc, std::string info, void (*help)());
   static void addMethods();
 
   // Commands
   static void displayElement(std::vector<std::string> args);
+  static void compareElements(std::vector<std::string> args);
 
   // Data Members
   static std::vector<Element*> table;
