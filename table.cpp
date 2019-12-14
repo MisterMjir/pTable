@@ -42,6 +42,7 @@ void Table::close()
    bool foundFunc = false;
    for (auto method : methods)
    {
+     // NOTE: Make this better
      if (function.compare(method->name) == 0)
      {
        foundFunc = true;
@@ -57,7 +58,9 @@ void Table::close()
          else // Method is good to go
            method->method(args);
        }
-       else // Call function normally
+       else if (args.size() < method->argc) // Call function normally
+        std::cout << "Missing a parameter. For help try '" << method->name << " help'\n";
+       else // Call normally
         method->method(args);
 
        break; // Function is found so no need to continue the loop
