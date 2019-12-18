@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include "table.h"
+#include <pTable.h>
 
 int main(int argc, char* args[])
 {

@@ -1,6 +1,7 @@
 #include "table.h"
 #include <iostream>
 #include "utility.h"
+#include "version.h"
 
 std::vector<Element*> Table::table;
 std::vector<Method*> Table::methods;
@@ -218,8 +219,8 @@ static void displayElementHelp()
 }
 
 /*
- * compareElements
- * ---------------
+ * Table::compareElements
+ * ----------------------
  * Use 'compare help' ;)
  */
 void Table::compareElements(const std::vector<std::string> &args)
@@ -276,6 +277,26 @@ static void compareElementsHelp()
 }
 
 /*
+ * getVersion
+ * ----------
+ * Prints out version
+ */
+static void getVersion(const std::vector<std::string> &args)
+{
+  std::cout << "The version is " << VERSION_MAJOR << "." << VERSION_MINOR << "." << VERSION_PATCH << "\n";
+}
+
+/*
+ * getVersionHelp
+ * --------------
+ * The help function for getVersion()
+ */
+static void getVersionHelp()
+{
+  std::cout << "Display the current version\n";
+}
+
+/*
  * =================================================
  * ADD METHOD METHODS
  * =================================================
@@ -317,6 +338,7 @@ void Table::addMethods()
   addMethod("exit", doNothing, 0, "Exit the program", NULL);
   addMethod("display", displayElement, 1, "Find an element and display useful information", displayElementHelp);
   addMethod("compare", compareElements, 3, "Compares properties of elements", compareElementsHelp);
+  addMethod("version", getVersion, 0, "Displays the pTable version", getVersionHelp);
 }
 
 /*
