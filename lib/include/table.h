@@ -28,7 +28,7 @@ private:
 
   // Add Elements
   static void addElements();
-  static void addElement(const std::string &name, const std::string &symbol, int atomicNumber, int period, int group, float electronegativity);
+  static void addElement(const std::string &name, const std::string &symbol, int atomicNumber, int period, int group, float electronegativity, int radius);
   // Add Methods
   static void addMethod(const std::string &name, void (*method)(const std::vector<std::string> &), int argc, const std::string &info, void (*help)());
   static void addMethods();

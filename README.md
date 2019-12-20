@@ -5,12 +5,17 @@
 [![GitHub repo size](https://img.shields.io/github/repo-size/mistermjir/pTable)]("https://github.com/MisterMjir/pTable")
 [![Codacy grade](https://img.shields.io/codacy/grade/28567a324ef94003b625b71075e82b35?logo=codacy)](https://app.codacy.com/manual/MisterMjir/pTable/dashboard)
 
-A console Periodic Table tool
+A Periodic Table library
 
 ## Install
-1. Go to whatever release you want (I suggest latest)
-2. Install the correct executable for your system
-3. If your system isn't there then you will have to build it yourself, sorry :(
+### Windows
+1. Go to releases and install the .exe
+
+### Everyone else
+1. Make sure you have CMake
+2. Install the source (either download repo or go to releases and download source)
+3. Unzip the zip and open a terminal in the directory with CMakeLists.txt
+4. Run CMake
 
 ## Fine Print
 - Currently doesn't have much functionality... (more features are planned!)

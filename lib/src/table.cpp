@@ -223,11 +223,13 @@ static void displayElementHelp()
  * ----------------------
  * Use 'compare help' ;)
  */
+ // NOTE: Redundant code, can be simplified
 void Table::compareElements(const std::vector<std::string> &args)
 {
   std::vector<std::string> subCommands;
   subCommands.push_back("all");
   subCommands.push_back("electronegativity");
+  subCommands.push_back("radius");
 
   if (checkstrnocase(args.at(0), subCommands.at(0)))
   {
@@ -239,7 +241,16 @@ void Table::compareElements(const std::vector<std::string> &args)
     Element* elm2 = queryElement(args.at(2));
     if (elm1 && elm2)
     {
-      if (elm1->electronegativity > elm2->electronegativity)
+      if (elm1->electronegativity == 0 || elm2->electronegativity == 0)
+      {
+        if (elm1->electronegativity == 0 && elm2->electronegativity == 0)
+          std::cout << "Both of the selected elements don't have a known electronegativity\n";
+        else if (elm1->electronegativity == 0)
+          std::cout << elm1->name << " does not have a known electronegativity\n";
+        else
+          std::cout << elm2->name << " does not have a known electronegativity\n";
+      }
+      else if (elm1->electronegativity > elm2->electronegativity)
       {
         std::cout << elm1->name << " with an electronegativity value of " << elm1->electronegativity << " is greater than\n";
         std::cout << elm2->name << " with an electronegativity value of " << elm2->electronegativity << "\n";
@@ -247,8 +258,40 @@ void Table::compareElements(const std::vector<std::string> &args)
       }
       else
       {
-        std::cout << elm2->name << " with an electronegativity value of " << elm2->electronegativity << " is greater than " << elm1->name << " with an electronegativity value of " << elm1->electronegativity << "\n";
+        std::cout << elm2->name << " with an electronegativity value of " << elm2->electronegativity << " is greater than\n";
+        std::cout << elm1->name << " with an electronegativity value of " << elm1->electronegativity << "\n";
         std::cout << "The difference between the values is " << (elm2->electronegativity - elm1->electronegativity) << "\n";
+      }
+    }
+    else
+      std::cout << "Could not process the elements\n";
+  }
+  else if (checkstrnocase(args.at(0), subCommands.at(2)))
+  {
+    Element* elm1 = queryElement(args.at(1));
+    Element* elm2 = queryElement(args.at(2));
+    if (elm1 && elm2)
+    {
+      if (elm1->radius == 0 || elm2->radius == 0)
+      {
+        if (elm1->radius == 0 && elm2->radius == 0)
+          std::cout << "Both of the selected elements don't have a known radius\n";
+        else if (elm1->radius == 0)
+          std::cout << elm1->name << " does not have a known radius\n";
+        else
+          std::cout << elm2->name << " does not have a known radius\n";
+      }
+      else if (elm1->radius > elm2->radius)
+      {
+        std::cout << elm1->name << " with a radius of " << elm1->radius << " pm is greater than\n";
+        std::cout << elm2->name << " with a radius of " << elm2->radius << " pm\n";
+        std::cout << "The difference between the radii is " << (elm1->radius - elm2->radius) << "\n";
+      }
+      else
+      {
+        std::cout << elm2->name << " with a radius of " << elm2->radius << " pm is greater than\n";
+        std::cout << elm1->name << " with a radius of " << elm1->radius << " pm\n";
+        std::cout << "The difference between the radii is " << (elm2->radius - elm1->radius) << "\n";
       }
     }
     else
@@ -361,7 +404,7 @@ void Table::addMethods()
  * int period         | The period of the element
  * int group          | The group of the element
  */
-void Table::addElement(const std::string &name, const std::string &symbol, int atomicNumber, int period, int group, float electronegativity)
+void Table::addElement(const std::string &name, const std::string &symbol, int atomicNumber, int period, int group, float electronegativity, int radius)
 {
   Element* elm = new Element;
   elm->name = name;
@@ -370,6 +413,7 @@ void Table::addElement(const std::string &name, const std::string &symbol, int a
   elm->period = period;
   elm->group = group;
   elm->electronegativity = electronegativity;
+  elm->radius = radius;
 
   table.push_back(elm);
 }
@@ -381,124 +425,124 @@ void Table::addElement(const std::string &name, const std::string &symbol, int a
  */
 void Table::addElements()
 {
-  addElement("Hydrogen",      "H",    1, 1,  1, 2.20);
-  addElement("Helium",        "He",   2, 1, 18, 0.00);
-  addElement("Lithium",       "Li",   3, 2,  1, 0.98);
-  addElement("Beryllium",     "Be",   4, 2,  2, 1.57);
-  addElement("Boron",         "B",    5, 2, 13, 2.04);
-  addElement("Carbon",        "C",    6, 2, 14, 2.55);
-  addElement("Nitrogen",      "N",    7, 2, 15, 3.04);
-  addElement("Oxygen",        "O",    8, 2, 16, 3.44);
-  addElement("Fluorine",      "F",    9, 2, 17, 3.98);
-  addElement("Neon",          "Ne",  10, 2, 18, 0.00);
-  addElement("Sodium",        "Na",  11, 3,  1, 0.93);
-  addElement("Magnesium",     "Mg",  12, 3,  2, 1.31);
-  addElement("Aluminium",     "Al",  13, 3, 13, 1.61);
-  addElement("Silicon",       "Si",  14, 3, 14, 1.90);
-  addElement("Phosphorus",    "P",   15, 3, 15, 2.19);
-  addElement("Sulfur",        "S",   16, 3, 16, 2.58);
-  addElement("Chlorine",      "Cl",  17, 3, 17, 3.16);
-  addElement("Argon",         "Ar",  18, 3, 18, 0.00);
-  addElement("Potassium",     "K",   19, 4,  1, 0.82);
-  addElement("Calcium",       "Ca",  20, 4,  2, 1.00);
-  addElement("Scandium",      "Sc",  21, 4,  3, 1.36);
-  addElement("Titanium",      "Ti",  22, 4,  4, 1.54);
-  addElement("Vanadium",      "V",   23, 4,  5, 1.63);
-  addElement("Chromium",      "Cr",  24, 4,  6, 1.66);
-  addElement("Manganese",     "Mn",  25, 4,  7, 1.55);
-  addElement("Iron",          "Fe",  26, 4,  8, 1.83);
-  addElement("Cobalt",        "Co",  27, 4,  9, 1.88);
-  addElement("Nickel",        "Ni",  28, 4, 10, 1.91);
-  addElement("Copper",        "Cu",  29, 4, 11, 1.90);
-  addElement("Zinc",          "Zn",  30, 4, 12, 1.65);
-  addElement("Gallium",       "Ga",  31, 4, 13, 1.81);
-  addElement("Germanium",     "Ge",  32, 4, 14, 2.01);
-  addElement("Arsenic",       "As",  33, 4, 15, 2.18);
-  addElement("Selenium",      "Se",  34, 4, 16, 2.55);
-  addElement("Bromine",       "Br",  35, 4, 17, 2.96);
-  addElement("Krypton",       "Kr",  36, 4, 18, 3.00);
-  addElement("Rubidium",      "Rb",  37, 5,  1, 0.82);
-  addElement("Strontium",     "Sr",  38, 5,  2, 0.95);
-  addElement("Yttrium",       "Y",   39, 5,  3, 1.22);
-  addElement("Zicronium",     "Zr",  40, 5,  4, 1.33);
-  addElement("Niobium",       "Nb",  41, 5,  5, 1.60);
-  addElement("Molybdenum",    "Mo",  42, 5,  6, 2.16);
-  addElement("Technetium",    "Tc",  43, 5,  7, 1.90);
-  addElement("Ruthenium",     "Ru",  44, 5,  8, 2.20);
-  addElement("Rhodium",       "Rh",  45, 5,  9, 2.28);
-  addElement("Palladium",     "Pd",  46, 5, 10, 2.20);
-  addElement("Silver",        "Ag",  47, 5, 11, 1.93);
-  addElement("Cadmium",       "Cd",  48, 5, 12, 1.69);
-  addElement("Indium",        "In",  49, 5, 13, 1.78);
-  addElement("Tin",           "Sn",  50, 5, 14, 1.96);
-  addElement("Antimony",      "Sb",  51, 5, 15, 2.05);
-  addElement("Tellurium",     "Te",  52, 5, 16, 2.10);
-  addElement("Iodine",        "I",   53, 5, 17, 2.66);
-  addElement("Xenon",         "Xe",  54, 5, 18, 2.60);
-  addElement("Caesium",       "Cs",  55, 6,  1, 0.79);
-  addElement("Barium",        "Ba",  56, 6,  2, 0.89);
-  addElement("Lanthanum",     "La",  57, 6, -1, 1.10);
-  addElement("Cerium",        "Ce",  58, 6, -1, 1.12);
-  addElement("Praseodymium",  "Pr",  59, 6, -1, 1.13);
-  addElement("Neodymium",     "Nd",  60, 6, -1, 1.14);
-  addElement("Promethium",    "Pm",  61, 6, -1, 0.00);
-  addElement("Samarium",      "Sm",  62, 6, -1, 1.17);
-  addElement("Europium",      "Eu",  63, 6, -1, 0.00);
-  addElement("Gadolinium",    "Gd",  64, 6, -1, 1.20);
-  addElement("Terbium",       "Tb",  65, 6, -1, 0.00);
-  addElement("Dysprosium",    "Dy",  66, 6, -1, 1.22);
-  addElement("Holmium",       "Ho",  67, 6, -1, 1.23);
-  addElement("Erbium",        "Er",  68, 6, -1, 1.24);
-  addElement("Thulium",       "Tm",  69, 6, -1, 1.25);
-  addElement("Ytterbium",     "Yb",  70, 6, -1, 0.00);
-  addElement("Lutetium",      "Lu",  71, 6, -1, 1.27);
-  addElement("Hafnium",       "Hf",  72, 6,  4, 1.30);
-  addElement("Tantalum",      "Ta",  73, 6,  5, 1.50);
-  addElement("Tungsten",      "W",   74, 6,  6, 2.36);
-  addElement("Rhenium",       "Re",  75, 6,  7, 1.90);
-  addElement("Osmium",        "Os",  76, 6,  8, 2.20);
-  addElement("Iridium",       "Ir",  77, 6,  9, 2.20);
-  addElement("Platinum",      "Pt",  78, 6, 10, 2.28);
-  addElement("Gold",          "Au",  79, 6, 11, 2.54);
-  addElement("Mercury",       "Hg",  80, 6, 12, 2.00);
-  addElement("Thallium",      "Tl",  81, 6, 13, 1.62);
-  addElement("Lead",          "Pb",  82, 6, 14, 2.33);
-  addElement("Bismuth",       "Bi",  83, 6, 15, 2.02);
-  addElement("Polonium",      "Po",  84, 6, 16, 2.00);
-  addElement("Astatine",      "At",  85, 6, 17, 2.20);
-  addElement("Radon",         "Rn",  86, 6, 18, 0.00);
-  addElement("Francium",      "Fr",  87, 7,  1, 0.70);
-  addElement("Radium",        "Fa",  88, 7,  2, 0.90);
-  addElement("Actinium",      "Ac",  89, 7, -2, 1.10);
-  addElement("Thorium",       "Th",  90, 7, -2, 1.30);
-  addElement("Protactinum",   "Pa",  91, 7, -2, 1.50);
-  addElement("Uranium",       "U",   92, 7, -2, 1.38);
-  addElement("Neptunium",     "Np",  93, 7, -2, 1.36);
-  addElement("Plutonium",     "Pu",  94, 7, -2, 1.28);
-  addElement("Americium",     "Am",  95, 7, -2, 1.30);
-  addElement("Curium",        "Cm",  96, 7, -2, 1.30);
-  addElement("Berkelium",     "Bk",  97, 7, -2, 1.30);
-  addElement("Californium",   "Cf",  98, 7, -2, 1.30);
-  addElement("Einsteinium",   "Es",  99, 7, -2, 1.30);
-  addElement("Fermium",       "Fm", 100, 7, -2, 1.30);
-  addElement("Mendelevium",   "Md", 101, 7, -2, 1.30);
-  addElement("Nobelium",      "No", 102, 7, -2, 1.30);
-  addElement("Lawrencium",    "Lr", 103, 7, -2, 0.00);
-  addElement("Rutherfordium", "Rf", 104, 7,  4, 0.00);
-  addElement("Dubnium",       "Db", 105, 7,  5, 0.00);
-  addElement("Seaborgium",    "Sg", 106, 7,  6, 0.00);
-  addElement("Bohrium",       "Bh", 107, 7,  7, 0.00);
-  addElement("Hassium",       "Hs", 108, 7,  8, 0.00);
-  addElement("Meitnerium",    "Mt", 109, 7,  9, 0.00);
-  addElement("Darmstadtium",  "Ds", 110, 7, 10, 0.00);
-  addElement("Roentgenium",   "Rg", 111, 7, 11, 0.00);
-  addElement("Copernicium",   "Cn", 112, 7, 12, 0.00);
-  addElement("Nihonium",      "Nh", 113, 7, 13, 0.00);
-  addElement("Flerovium",     "Fl", 114, 7, 14, 0.00);
-  addElement("Moscovium",     "Mc", 115, 7, 15, 0.00);
-  addElement("Livermonium",   "Lv", 116, 7, 16, 0.00);
-  addElement("Tennessine",    "Ts", 117, 7, 17, 0.00);
-  addElement("Oganesson",     "Og", 118, 7, 18, 0.00);
+  addElement("Hydrogen",      "H",    1, 1,  1, 2.20,  53);
+  addElement("Helium",        "He",   2, 1, 18, 0.00,  31);
+  addElement("Lithium",       "Li",   3, 2,  1, 0.98, 167);
+  addElement("Beryllium",     "Be",   4, 2,  2, 1.57, 112);
+  addElement("Boron",         "B",    5, 2, 13, 2.04,  87);
+  addElement("Carbon",        "C",    6, 2, 14, 2.55,  67);
+  addElement("Nitrogen",      "N",    7, 2, 15, 3.04,  56);
+  addElement("Oxygen",        "O",    8, 2, 16, 3.44,  48);
+  addElement("Fluorine",      "F",    9, 2, 17, 3.98,  42);
+  addElement("Neon",          "Ne",  10, 2, 18, 0.00,  38);
+  addElement("Sodium",        "Na",  11, 3,  1, 0.93, 190);
+  addElement("Magnesium",     "Mg",  12, 3,  2, 1.31, 145);
+  addElement("Aluminium",     "Al",  13, 3, 13, 1.61, 118);
+  addElement("Silicon",       "Si",  14, 3, 14, 1.90, 111);
+  addElement("Phosphorus",    "P",   15, 3, 15, 2.19,  98);
+  addElement("Sulfur",        "S",   16, 3, 16, 2.58,  88);
+  addElement("Chlorine",      "Cl",  17, 3, 17, 3.16,  79);
+  addElement("Argon",         "Ar",  18, 3, 18, 0.00,  71);
+  addElement("Potassium",     "K",   19, 4,  1, 0.82, 243);
+  addElement("Calcium",       "Ca",  20, 4,  2, 1.00, 194);
+  addElement("Scandium",      "Sc",  21, 4,  3, 1.36, 184);
+  addElement("Titanium",      "Ti",  22, 4,  4, 1.54, 176);
+  addElement("Vanadium",      "V",   23, 4,  5, 1.63, 171);
+  addElement("Chromium",      "Cr",  24, 4,  6, 1.66, 166);
+  addElement("Manganese",     "Mn",  25, 4,  7, 1.55, 161);
+  addElement("Iron",          "Fe",  26, 4,  8, 1.83, 156);
+  addElement("Cobalt",        "Co",  27, 4,  9, 1.88, 152);
+  addElement("Nickel",        "Ni",  28, 4, 10, 1.91, 149);
+  addElement("Copper",        "Cu",  29, 4, 11, 1.90, 145);
+  addElement("Zinc",          "Zn",  30, 4, 12, 1.65, 142);
+  addElement("Gallium",       "Ga",  31, 4, 13, 1.81, 136);
+  addElement("Germanium",     "Ge",  32, 4, 14, 2.01, 125);
+  addElement("Arsenic",       "As",  33, 4, 15, 2.18, 114);
+  addElement("Selenium",      "Se",  34, 4, 16, 2.55, 103);
+  addElement("Bromine",       "Br",  35, 4, 17, 2.96,  94);
+  addElement("Krypton",       "Kr",  36, 4, 18, 3.00,  88);
+  addElement("Rubidium",      "Rb",  37, 5,  1, 0.82, 265);
+  addElement("Strontium",     "Sr",  38, 5,  2, 0.95, 219);
+  addElement("Yttrium",       "Y",   39, 5,  3, 1.22, 212);
+  addElement("Zicronium",     "Zr",  40, 5,  4, 1.33, 206);
+  addElement("Niobium",       "Nb",  41, 5,  5, 1.60, 198);
+  addElement("Molybdenum",    "Mo",  42, 5,  6, 2.16, 190);
+  addElement("Technetium",    "Tc",  43, 5,  7, 1.90, 183);
+  addElement("Ruthenium",     "Ru",  44, 5,  8, 2.20, 178);
+  addElement("Rhodium",       "Rh",  45, 5,  9, 2.28, 173);
+  addElement("Palladium",     "Pd",  46, 5, 10, 2.20, 169);
+  addElement("Silver",        "Ag",  47, 5, 11, 1.93, 165);
+  addElement("Cadmium",       "Cd",  48, 5, 12, 1.69, 161);
+  addElement("Indium",        "In",  49, 5, 13, 1.78, 156);
+  addElement("Tin",           "Sn",  50, 5, 14, 1.96, 145);
+  addElement("Antimony",      "Sb",  51, 5, 15, 2.05, 133);
+  addElement("Tellurium",     "Te",  52, 5, 16, 2.10, 123);
+  addElement("Iodine",        "I",   53, 5, 17, 2.66, 115);
+  addElement("Xenon",         "Xe",  54, 5, 18, 2.60, 108);
+  addElement("Caesium",       "Cs",  55, 6,  1, 0.79, 298);
+  addElement("Barium",        "Ba",  56, 6,  2, 0.89, 253);
+  addElement("Lanthanum",     "La",  57, 6, -1, 1.10,   0);
+  addElement("Cerium",        "Ce",  58, 6, -1, 1.12,   0);
+  addElement("Praseodymium",  "Pr",  59, 6, -1, 1.13, 247);
+  addElement("Neodymium",     "Nd",  60, 6, -1, 1.14, 206);
+  addElement("Promethium",    "Pm",  61, 6, -1, 0.00, 205);
+  addElement("Samarium",      "Sm",  62, 6, -1, 1.17, 238);
+  addElement("Europium",      "Eu",  63, 6, -1, 0.00, 231);
+  addElement("Gadolinium",    "Gd",  64, 6, -1, 1.20, 233);
+  addElement("Terbium",       "Tb",  65, 6, -1, 0.00, 223);
+  addElement("Dysprosium",    "Dy",  66, 6, -1, 1.22, 228);
+  addElement("Holmium",       "Ho",  67, 6, -1, 1.23, 226);
+  addElement("Erbium",        "Er",  68, 6, -1, 1.24, 226);
+  addElement("Thulium",       "Tm",  69, 6, -1, 1.25, 222);
+  addElement("Ytterbium",     "Yb",  70, 6, -1, 0.00, 222);
+  addElement("Lutetium",      "Lu",  71, 6, -1, 1.27, 217);
+  addElement("Hafnium",       "Hf",  72, 6,  4, 1.30, 208);
+  addElement("Tantalum",      "Ta",  73, 6,  5, 1.50, 200);
+  addElement("Tungsten",      "W",   74, 6,  6, 2.36, 193);
+  addElement("Rhenium",       "Re",  75, 6,  7, 1.90, 188);
+  addElement("Osmium",        "Os",  76, 6,  8, 2.20, 185);
+  addElement("Iridium",       "Ir",  77, 6,  9, 2.20, 180);
+  addElement("Platinum",      "Pt",  78, 6, 10, 2.28, 177);
+  addElement("Gold",          "Au",  79, 6, 11, 2.54, 174);
+  addElement("Mercury",       "Hg",  80, 6, 12, 2.00, 171);
+  addElement("Thallium",      "Tl",  81, 6, 13, 1.62, 156);
+  addElement("Lead",          "Pb",  82, 6, 14, 2.33, 154);
+  addElement("Bismuth",       "Bi",  83, 6, 15, 2.02, 143);
+  addElement("Polonium",      "Po",  84, 6, 16, 2.00, 135);
+  addElement("Astatine",      "At",  85, 6, 17, 2.20, 127);
+  addElement("Radon",         "Rn",  86, 6, 18, 0.00, 120);
+  addElement("Francium",      "Fr",  87, 7,  1, 0.70,   0);
+  addElement("Radium",        "Fa",  88, 7,  2, 0.90,   0);
+  addElement("Actinium",      "Ac",  89, 7, -2, 1.10,   0);
+  addElement("Thorium",       "Th",  90, 7, -2, 1.30,   0);
+  addElement("Protactinum",   "Pa",  91, 7, -2, 1.50,   0);
+  addElement("Uranium",       "U",   92, 7, -2, 1.38,   0);
+  addElement("Neptunium",     "Np",  93, 7, -2, 1.36,   0);
+  addElement("Plutonium",     "Pu",  94, 7, -2, 1.28,   0);
+  addElement("Americium",     "Am",  95, 7, -2, 1.30,   0);
+  addElement("Curium",        "Cm",  96, 7, -2, 1.30,   0);
+  addElement("Berkelium",     "Bk",  97, 7, -2, 1.30,   0);
+  addElement("Californium",   "Cf",  98, 7, -2, 1.30,   0);
+  addElement("Einsteinium",   "Es",  99, 7, -2, 1.30,   0);
+  addElement("Fermium",       "Fm", 100, 7, -2, 1.30,   0);
+  addElement("Mendelevium",   "Md", 101, 7, -2, 1.30,   0);
+  addElement("Nobelium",      "No", 102, 7, -2, 1.30,   0);
+  addElement("Lawrencium",    "Lr", 103, 7, -2, 0.00,   0);
+  addElement("Rutherfordium", "Rf", 104, 7,  4, 0.00,   0);
+  addElement("Dubnium",       "Db", 105, 7,  5, 0.00,   0);
+  addElement("Seaborgium",    "Sg", 106, 7,  6, 0.00,   0);
+  addElement("Bohrium",       "Bh", 107, 7,  7, 0.00,   0);
+  addElement("Hassium",       "Hs", 108, 7,  8, 0.00,   0);
+  addElement("Meitnerium",    "Mt", 109, 7,  9, 0.00,   0);
+  addElement("Darmstadtium",  "Ds", 110, 7, 10, 0.00,   0);
+  addElement("Roentgenium",   "Rg", 111, 7, 11, 0.00,   0);
+  addElement("Copernicium",   "Cn", 112, 7, 12, 0.00,   0);
+  addElement("Nihonium",      "Nh", 113, 7, 13, 0.00,   0);
+  addElement("Flerovium",     "Fl", 114, 7, 14, 0.00,   0);
+  addElement("Moscovium",     "Mc", 115, 7, 15, 0.00,   0);
+  addElement("Livermonium",   "Lv", 116, 7, 16, 0.00,   0);
+  addElement("Tennessine",    "Ts", 117, 7, 17, 0.00,   0);
+  addElement("Oganesson",     "Og", 118, 7, 18, 0.00,   0);
 }
 
 /*

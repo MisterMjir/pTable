@@ -3,7 +3,7 @@
 
 #include <string>
 
-enum Property {NAME, SYMBOL, ATOMIC_NUMBER, PERIOD, GROUP, ELECTRONEGATIVITY};
+enum Property {NAME, SYMBOL, ATOMIC_NUMBER, PERIOD, GROUP, ELECTRONEGATIVITY, RADIUS};
 
 struct Element
 {
@@ -13,6 +13,7 @@ struct Element
   short int period;
   short int group;
   float electronegativity;
+  short int radius; // Calculated Radius
 };
 
 #endif

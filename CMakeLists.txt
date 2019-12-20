@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 # Project Name
-project(pTable VERSION 2.0.0 DESCRIPTION "Periodic Table")
+project(pTable VERSION 2.1.0 DESCRIPTION "Periodic Table")
 
 add_library(pTable SHARED
   lib/src/table.cpp
