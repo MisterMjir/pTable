@@ -33,7 +33,7 @@ void Table::close()
   * --------------------
   * std::string command | A command name plus all the arguments needed for it
   */
- void Table::handleCommand(const std::string &command)
+ void Table::handleCommand(STR_PARAM command)
  {
    std::cout << "\n"; // Separate output from what user typed
 
@@ -101,7 +101,7 @@ template <typename T> Element* Table::getElement(T query, bool (*expression)(Ele
  * Params
  * std::string arg | Can be integer (atomic number), element symbol (case sensitive), or element name (case insensitive)
  */
-Element* Table::queryElement(const std::string &arg)
+Element* Table::queryElement(STR_PARAM arg)
 {
   try
   {
@@ -145,11 +145,11 @@ Element* Table::queryElement(const std::string &arg)
 void Table::printElement(Element* elm)
 {
   std::cout << elm->name << " (" << elm->symbol << ")\n";
-  std::cout << "Atomic Number: " << elm->atomicNumber << "\n";
-  std::cout << "Period: " << elm->period << "\tGroup: ";
+  std::cout << "Atomic Number: " << (int) elm->atomicNumber << "\n";
+  std::cout << "Period: " << (int) elm->period << "\tGroup: ";
 
   if (elm->group > 1)
-    std::cout << elm->group;
+    std::cout << (int) elm->group;
   else if (elm->group == -1)
     std::cout << "Lanthanide";
   else
@@ -177,7 +177,7 @@ void Table::printElements()
  * Params
  * std::vector<std::string> args | Arguments param required by Method struct
  */
-void Table::helpHelp(const std::vector<std::string> &args)
+void Table::help(METHOD_ARGS args)
 {
   std::cout << "Run a command by using 'CommandName arguments' (case-sensitive)\nFor more information about a command run 'CommandName help'\n\n";
   std::cout << "List of commands:\n";
@@ -199,7 +199,7 @@ void Table::helpHelp(const std::vector<std::string> &args)
  * ---------------------
  * Use 'display help' ;)
  */
-void Table::displayElement(const std::vector<std::string> &args)
+void Table::displayElement(METHOD_ARGS args)
 {
   Element* elm = queryElement(args.at(0));
   if (elm)
@@ -233,7 +233,7 @@ static void displayElementHelp()
  * std::string name2 | Name of 2nd element
  * float val2 | Value of 2nd element's property
  */
-static void compareElementNumericProperties(const std::string &prop, const std::string &unit, const std::string &name1, float val1, const std::string &name2, float val2)
+static void compareElementNumericProperties(STR_PARAM prop, STR_PARAM unit, STR_PARAM name1, float val1, STR_PARAM name2, float val2)
 {
   if (val1 == -1 || val2 == -1)
   {
@@ -252,8 +252,8 @@ static void compareElementNumericProperties(const std::string &prop, const std::
   }
   else
   {
-    std::cout << val2 << "'s " << prop << " value of " << val2 << " " << unit << " is greater than\n";
-    std::cout << val1 << "'s " << prop << " value of " << val1 << " " << unit << "\n";
+    std::cout << name2 << "'s " << prop << " of " << val2 << " " << unit << " is greater than\n";
+    std::cout << name1 << "'s " << prop << " of " << val1 << " " << unit << "\n";
     std::cout << "The difference between the values is " << (val2 - val1) << " " << unit << "\n";
   }
 }
@@ -263,7 +263,7 @@ static void compareElementNumericProperties(const std::string &prop, const std::
  * ----------------------
  * Use 'compare help' ;)
  */
-void Table::compareElements(const std::vector<std::string> &args)
+void Table::compareElements(METHOD_ARGS args)
 {
   std::vector<std::string> subCommands;
   subCommands.push_back("all");
@@ -313,7 +313,7 @@ static void compareElementsHelp()
  * ----------
  * Prints out version
  */
-static void getVersion(const std::vector<std::string> &args)
+static void getVersion(METHOD_ARGS args)
 {
   std::cout << "The version is " << VERSION_MAJOR << "." << VERSION_MINOR << "." << VERSION_PATCH << "\n";
 }
@@ -338,7 +338,7 @@ static void getVersion(const std::vector<std::string> &args)
  * std::string info                         | A short blurb on what the function does
  * void (*help)()                           | The method to call if the argument is 'help', can be NULL if argc is 0
  */
-void Table::addMethod(const std::string &name, void (*method)(const std::vector<std::string> &), int argc, const std::string &info, void (*help)())
+void Table::addMethod(STR_PARAM name, void (*method)(METHOD_ARGS), int argc, STR_PARAM info, void (*help)())
 {
   Method* newMethod = new Method;
   newMethod->name = name;
@@ -356,7 +356,7 @@ void Table::addMethod(const std::string &name, void (*method)(const std::vector<
  */
 void Table::addMethods()
 {
-  addMethod("help", helpHelp, 0, "Displays helpful information", NULL);
+  addMethod("help", help, 0, "Displays helpful information", NULL);
   addMethod("exit", doNothing, 0, "Exit the program", NULL);
   addMethod("version", getVersion, 0, "Displays the pTable version", NULL);
   addMethod("display", displayElement, 1, "Find an element and display useful information", displayElementHelp);
@@ -383,7 +383,7 @@ void Table::addMethods()
  * int period         | The period of the element
  * int group          | The group of the element
  */
-void Table::addElement(const std::string &name, const std::string &symbol, int atomicNumber, int period, int group, float electronegativity, int radius)
+void Table::addElement(STR_PARAM name, STR_PARAM symbol, uint8_t atomicNumber, int8_t period, int8_t group, float electronegativity, short int radius)
 {
   Element* elm = new Element;
   elm->name = name;

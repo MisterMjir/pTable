@@ -5,6 +5,7 @@
 #include <string>
 #include "element.h"
 #include "method.h"
+#include "utility.h"
 
 class Table
 {
@@ -13,14 +14,14 @@ public:
   static void close();
 
   // Member functions
-  static void handleCommand(const std::string &command);
+  static void handleCommand(STR_PARAM command);
   template <typename T> static Element* getElement(T query, bool (*expression)(Element*, T));
-  static Element* queryElement(const std::string &arg);
+  static Element* queryElement(STR_PARAM arg);
 
   // Print commands
   static void printElement(Element*);
   static void printElements();
-  static void helpHelp(const std::vector<std::string> &args);
+  static void help(METHOD_ARGS args);
 private:
   Table();
   ~Table();
@@ -28,14 +29,14 @@ private:
 
   // Add Elements
   static void addElements();
-  static void addElement(const std::string &name, const std::string &symbol, int atomicNumber, int period, int group, float electronegativity, int radius);
+  static void addElement(STR_PARAM name, STR_PARAM symbol, uint8_t atomicNumber, int8_t period, int8_t group, float electronegativity, short int radius);
   // Add Methods
-  static void addMethod(const std::string &name, void (*method)(const std::vector<std::string> &), int argc, const std::string &info, void (*help)());
+  static void addMethod(STR_PARAM name, void (*method)(METHOD_ARGS), int argc, STR_PARAM info, void (*help)());
   static void addMethods();
 
   // Commands
-  static void displayElement(const std::vector<std::string> &args);
-  static void compareElements(const std::vector<std::string> &args);
+  static void displayElement(METHOD_ARGS args);
+  static void compareElements(METHOD_ARGS args);
 
   // Data Members
   static std::vector<Element*> table;

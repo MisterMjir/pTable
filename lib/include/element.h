@@ -3,7 +3,7 @@
 
 #include <string>
 
-enum ElementProperty {NAME, SYMBOL, ATOMIC_NUMBER, PERIOD, GROUP, ELECTRONEGATIVITY, RADIUS};
+// enum ElementProperty {NAME, SYMBOL, ATOMIC_NUMBER, PERIOD, GROUP, ELECTRONEGATIVITY, RADIUS};
 
 struct Element
 {
