@@ -4,6 +4,7 @@
 #include <vector>
 #include <cctype>
 #include <string>
+#include "method.h"
 
 #define STR_PARAM const std::string &
 
@@ -15,7 +16,7 @@ namespace pTable
 	 * Dummy function that does nothing
 	 */
 	void doNothing() {}
-	void doNothing(const std::vector<std::string> &) {}
+	void doNothing(METHOD_ARGS) {}
 
 	/*
 	 * bool checkstrnocase()
