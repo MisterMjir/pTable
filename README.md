@@ -7,6 +7,8 @@
 
 A Periodic Table library
 
+Documentation on the [GitHub Wiki](https://github.com/MisterMjir/pTable/wiki)
+
 ## Install
 ### Windows
 1. Go to releases and install pTable_windows.zip
