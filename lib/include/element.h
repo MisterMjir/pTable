@@ -3,15 +3,15 @@
 
 #include <string>
 
-enum Property {NAME, SYMBOL, ATOMIC_NUMBER, PERIOD, GROUP, ELECTRONEGATIVITY, RADIUS};
+enum ElementProperty {NAME, SYMBOL, ATOMIC_NUMBER, PERIOD, GROUP, ELECTRONEGATIVITY, RADIUS};
 
 struct Element
 {
   std::string name;
   std::string symbol;
-  unsigned short int atomicNumber;
-  short int period;
-  short int group;
+  uint8_t atomicNumber;
+  int8_t period;
+  int8_t group;
   float electronegativity;
   short int radius; // Calculated Radius
 };

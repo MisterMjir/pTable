@@ -9,13 +9,13 @@ A Periodic Table library
 
 ## Install
 ### Windows
-1. Go to releases and install the .exe
+1. Go to releases and install pTable_windows.zip
 
 ### Everyone else
 1. Make sure you have CMake
 2. Install the source (either download repo or go to releases and download source)
 3. Unzip the zip and open a terminal in the directory with CMakeLists.txt
-4. Run CMake
+4. Run CMake (If you want to build on windows make sure you use ```cmake -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=TRUE -DBUILD_SHARED_LIBS=TRUE```)
 
 ## Fine Print
 - Currently doesn't have much functionality... (more features are planned!)

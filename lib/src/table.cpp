@@ -1,6 +1,7 @@
 #include "table.h"
 #include <iostream>
 #include "utility.h"
+using namespace pTable;
 #include "version.h"
 
 std::vector<Element*> Table::table;
@@ -52,7 +53,8 @@ void Table::close()
          if (args.at(0).compare("help") == 0) // Argument is help
          {
            std::cout << method->info << "\n\n";
-           method->help();
+           if (method->help != NULL)
+            method->help();
          }
          else if (args.size() < method->argc) // Missing arguments
            std::cout << "Missing a parameter. For help try '" << method->name << " help'\n";
@@ -74,10 +76,10 @@ void Table::close()
  }
 
 /*
- * getElement
- * -------------
+ * Table::getElement
+ * -----------------
  * Use a query of integer or string to find an element
- * -------------
+ * -----------------
  * Params
  * T query                         | What the search term is
  * bool (*expression)(Element*, T) | The expression that will check if the element is the same as the search term
@@ -92,10 +94,10 @@ template <typename T> Element* Table::getElement(T query, bool (*expression)(Ele
 }
 
 /*
- * queryElement
- * ------------
+ * Table::queryElement
+ * -------------------
  * Queries and reuturns an element, null if failed
- * ------------
+ * -------------------
  * Params
  * std::string arg | Can be integer (atomic number), element symbol (case sensitive), or element name (case insensitive)
  */
@@ -219,11 +221,48 @@ static void displayElementHelp()
 }
 
 /*
+ * compareElementNumericProperties
+ * -------------------------------
+ * Helper function for Table::compareElements()
+ * -------------------------------
+ * PARAMS
+ * std::string prop | Property name
+ * std::string unit | Property unit
+ * std::string name1 | Name of 1st element
+ * float val1 | Value of 1st element's property
+ * std::string name2 | Name of 2nd element
+ * float val2 | Value of 2nd element's property
+ */
+static void compareElementNumericProperties(const std::string &prop, const std::string &unit, const std::string &name1, float val1, const std::string &name2, float val2)
+{
+  if (val1 == -1 || val2 == -1)
+  {
+    if (val1 == -1 && val2 == -1)
+      std::cout << "Both of the selected elements don't have a known " << prop << "\n";
+    else if (val1 == -1)
+      std::cout << name1 << " does not have a known " << prop << "\n";
+    else
+      std::cout << name2 << " does not have a known " << prop << "\n";
+  }
+  else if (val1 > val2)
+  {
+    std::cout << name1 << "'s " << prop << " of " << val1 << " " << unit << " is greater than\n";
+    std::cout << name2 << "'s " << prop << " of " << val2 << " " << unit << "\n";
+    std::cout << "The difference between the values is " << (val1 - val2) << " " << unit << "\n";
+  }
+  else
+  {
+    std::cout << val2 << "'s " << prop << " value of " << val2 << " " << unit << " is greater than\n";
+    std::cout << val1 << "'s " << prop << " value of " << val1 << " " << unit << "\n";
+    std::cout << "The difference between the values is " << (val2 - val1) << " " << unit << "\n";
+  }
+}
+
+/*
  * Table::compareElements
  * ----------------------
  * Use 'compare help' ;)
  */
- // NOTE: Redundant code, can be simplified
 void Table::compareElements(const std::vector<std::string> &args)
 {
   std::vector<std::string> subCommands;
@@ -231,75 +270,22 @@ void Table::compareElements(const std::vector<std::string> &args)
   subCommands.push_back("electronegativity");
   subCommands.push_back("radius");
 
-  if (checkstrnocase(args.at(0), subCommands.at(0)))
+  Element* elm1 = queryElement(args.at(1));
+  Element* elm2 = queryElement(args.at(2));
+  if (elm1 && elm2)
   {
-    std::cout << "Coming in a future update\n";
-  }
-  else if (checkstrnocase(args.at(0), subCommands.at(1)))
-  {
-    Element* elm1 = queryElement(args.at(1));
-    Element* elm2 = queryElement(args.at(2));
-    if (elm1 && elm2)
-    {
-      if (elm1->electronegativity == 0 || elm2->electronegativity == 0)
-      {
-        if (elm1->electronegativity == 0 && elm2->electronegativity == 0)
-          std::cout << "Both of the selected elements don't have a known electronegativity\n";
-        else if (elm1->electronegativity == 0)
-          std::cout << elm1->name << " does not have a known electronegativity\n";
-        else
-          std::cout << elm2->name << " does not have a known electronegativity\n";
-      }
-      else if (elm1->electronegativity > elm2->electronegativity)
-      {
-        std::cout << elm1->name << " with an electronegativity value of " << elm1->electronegativity << " is greater than\n";
-        std::cout << elm2->name << " with an electronegativity value of " << elm2->electronegativity << "\n";
-        std::cout << "The difference between the values is " << (elm1->electronegativity - elm2->electronegativity) << "\n";
-      }
-      else
-      {
-        std::cout << elm2->name << " with an electronegativity value of " << elm2->electronegativity << " is greater than\n";
-        std::cout << elm1->name << " with an electronegativity value of " << elm1->electronegativity << "\n";
-        std::cout << "The difference between the values is " << (elm2->electronegativity - elm1->electronegativity) << "\n";
-      }
-    }
+    if (checkstrnocase(args.at(0), subCommands.at(0))) // All
+      std::cout << "Coming in a future update\n";
+    else if (checkstrnocase(args.at(0), subCommands.at(1))) // Electronegativity
+      compareElementNumericProperties("electronegativity", "", elm1->name, elm1->electronegativity, elm2->name, elm2->electronegativity);
+    else if (checkstrnocase(args.at(0), subCommands.at(2)))
+      compareElementNumericProperties("radius", "pm", elm1->name, elm1->radius, elm2->name, elm2->radius);
     else
-      std::cout << "Could not process the elements\n";
-  }
-  else if (checkstrnocase(args.at(0), subCommands.at(2)))
-  {
-    Element* elm1 = queryElement(args.at(1));
-    Element* elm2 = queryElement(args.at(2));
-    if (elm1 && elm2)
-    {
-      if (elm1->radius == 0 || elm2->radius == 0)
-      {
-        if (elm1->radius == 0 && elm2->radius == 0)
-          std::cout << "Both of the selected elements don't have a known radius\n";
-        else if (elm1->radius == 0)
-          std::cout << elm1->name << " does not have a known radius\n";
-        else
-          std::cout << elm2->name << " does not have a known radius\n";
-      }
-      else if (elm1->radius > elm2->radius)
-      {
-        std::cout << elm1->name << " with a radius of " << elm1->radius << " pm is greater than\n";
-        std::cout << elm2->name << " with a radius of " << elm2->radius << " pm\n";
-        std::cout << "The difference between the radii is " << (elm1->radius - elm2->radius) << "\n";
-      }
-      else
-      {
-        std::cout << elm2->name << " with a radius of " << elm2->radius << " pm is greater than\n";
-        std::cout << elm1->name << " with a radius of " << elm1->radius << " pm\n";
-        std::cout << "The difference between the radii is " << (elm2->radius - elm1->radius) << "\n";
-      }
-    }
-    else
-      std::cout << "Could not process the elements\n";
+      std::cout << "Could not process the command: " << args.at(0) << "\n";
   }
   else
   {
-    std::cout << "Could not process the command: " << args.at(0) << "\n";
+    std::cout << "Could not process the elements.\n";
   }
 }
 
@@ -313,10 +299,13 @@ static void compareElementsHelp()
   std::cout << "This command takes three arguments:\n";
   std::cout << "\tThe trait to compare, the options are:\n";
   std::cout << "\t\telectronegativity\n";
-  std::cout << "\tTwo elements:\n";
-  std::cout << "\t\tA number for atomic number\n";
-  std::cout << "\t\tText for the element symbol or name (symbol is case sensitive: FIRSTLETTERsecondletter)\n\n";
-  std::cout << "ex. compare electronegativity H Carbon\n\n";
+  std::cout << "\t\t\tTwo elements:\n";
+  std::cout << "\t\t\t\tA number for atomic number\n";
+  std::cout << "\t\t\t\tText for the element symbol or name (symbol is case sensitive: FIRSTLETTERsecondletter)\n\n";
+  std::cout << "\t\t\tex. compare electronegativity H Carbon\n\n";
+  std::cout << "\t\tradius\n";
+  std::cout << "\t\t\tTwo elements:\n";
+  std::cout << "\t\t\t\tSame format for electronegativity\n\n";
 }
 
 /*
@@ -327,16 +316,6 @@ static void compareElementsHelp()
 static void getVersion(const std::vector<std::string> &args)
 {
   std::cout << "The version is " << VERSION_MAJOR << "." << VERSION_MINOR << "." << VERSION_PATCH << "\n";
-}
-
-/*
- * getVersionHelp
- * --------------
- * The help function for getVersion()
- */
-static void getVersionHelp()
-{
-  std::cout << "Display the current version\n";
 }
 
 /*
@@ -379,9 +358,9 @@ void Table::addMethods()
 {
   addMethod("help", helpHelp, 0, "Displays helpful information", NULL);
   addMethod("exit", doNothing, 0, "Exit the program", NULL);
+  addMethod("version", getVersion, 0, "Displays the pTable version", NULL);
   addMethod("display", displayElement, 1, "Find an element and display useful information", displayElementHelp);
   addMethod("compare", compareElements, 3, "Compares properties of elements", compareElementsHelp);
-  addMethod("version", getVersion, 0, "Displays the pTable version", getVersionHelp);
 }
 
 /*
@@ -426,7 +405,7 @@ void Table::addElement(const std::string &name, const std::string &symbol, int a
 void Table::addElements()
 {
   addElement("Hydrogen",      "H",    1, 1,  1, 2.20,  53);
-  addElement("Helium",        "He",   2, 1, 18, 0.00,  31);
+  addElement("Helium",        "He",   2, 1, 18,   -1,  31);
   addElement("Lithium",       "Li",   3, 2,  1, 0.98, 167);
   addElement("Beryllium",     "Be",   4, 2,  2, 1.57, 112);
   addElement("Boron",         "B",    5, 2, 13, 2.04,  87);
@@ -434,7 +413,7 @@ void Table::addElements()
   addElement("Nitrogen",      "N",    7, 2, 15, 3.04,  56);
   addElement("Oxygen",        "O",    8, 2, 16, 3.44,  48);
   addElement("Fluorine",      "F",    9, 2, 17, 3.98,  42);
-  addElement("Neon",          "Ne",  10, 2, 18, 0.00,  38);
+  addElement("Neon",          "Ne",  10, 2, 18,   -1,  38);
   addElement("Sodium",        "Na",  11, 3,  1, 0.93, 190);
   addElement("Magnesium",     "Mg",  12, 3,  2, 1.31, 145);
   addElement("Aluminium",     "Al",  13, 3, 13, 1.61, 118);
@@ -442,7 +421,7 @@ void Table::addElements()
   addElement("Phosphorus",    "P",   15, 3, 15, 2.19,  98);
   addElement("Sulfur",        "S",   16, 3, 16, 2.58,  88);
   addElement("Chlorine",      "Cl",  17, 3, 17, 3.16,  79);
-  addElement("Argon",         "Ar",  18, 3, 18, 0.00,  71);
+  addElement("Argon",         "Ar",  18, 3, 18,   -1,  71);
   addElement("Potassium",     "K",   19, 4,  1, 0.82, 243);
   addElement("Calcium",       "Ca",  20, 4,  2, 1.00, 194);
   addElement("Scandium",      "Sc",  21, 4,  3, 1.36, 184);
@@ -481,20 +460,20 @@ void Table::addElements()
   addElement("Xenon",         "Xe",  54, 5, 18, 2.60, 108);
   addElement("Caesium",       "Cs",  55, 6,  1, 0.79, 298);
   addElement("Barium",        "Ba",  56, 6,  2, 0.89, 253);
-  addElement("Lanthanum",     "La",  57, 6, -1, 1.10,   0);
-  addElement("Cerium",        "Ce",  58, 6, -1, 1.12,   0);
+  addElement("Lanthanum",     "La",  57, 6, -1, 1.10,  -1);
+  addElement("Cerium",        "Ce",  58, 6, -1, 1.12,  -1);
   addElement("Praseodymium",  "Pr",  59, 6, -1, 1.13, 247);
   addElement("Neodymium",     "Nd",  60, 6, -1, 1.14, 206);
-  addElement("Promethium",    "Pm",  61, 6, -1, 0.00, 205);
+  addElement("Promethium",    "Pm",  61, 6, -1,   -1, 205);
   addElement("Samarium",      "Sm",  62, 6, -1, 1.17, 238);
-  addElement("Europium",      "Eu",  63, 6, -1, 0.00, 231);
+  addElement("Europium",      "Eu",  63, 6, -1,   -1, 231);
   addElement("Gadolinium",    "Gd",  64, 6, -1, 1.20, 233);
-  addElement("Terbium",       "Tb",  65, 6, -1, 0.00, 223);
+  addElement("Terbium",       "Tb",  65, 6, -1,   -1, 223);
   addElement("Dysprosium",    "Dy",  66, 6, -1, 1.22, 228);
   addElement("Holmium",       "Ho",  67, 6, -1, 1.23, 226);
   addElement("Erbium",        "Er",  68, 6, -1, 1.24, 226);
   addElement("Thulium",       "Tm",  69, 6, -1, 1.25, 222);
-  addElement("Ytterbium",     "Yb",  70, 6, -1, 0.00, 222);
+  addElement("Ytterbium",     "Yb",  70, 6, -1,   -1, 222);
   addElement("Lutetium",      "Lu",  71, 6, -1, 1.27, 217);
   addElement("Hafnium",       "Hf",  72, 6,  4, 1.30, 208);
   addElement("Tantalum",      "Ta",  73, 6,  5, 1.50, 200);
@@ -510,39 +489,39 @@ void Table::addElements()
   addElement("Bismuth",       "Bi",  83, 6, 15, 2.02, 143);
   addElement("Polonium",      "Po",  84, 6, 16, 2.00, 135);
   addElement("Astatine",      "At",  85, 6, 17, 2.20, 127);
-  addElement("Radon",         "Rn",  86, 6, 18, 0.00, 120);
-  addElement("Francium",      "Fr",  87, 7,  1, 0.70,   0);
-  addElement("Radium",        "Fa",  88, 7,  2, 0.90,   0);
-  addElement("Actinium",      "Ac",  89, 7, -2, 1.10,   0);
-  addElement("Thorium",       "Th",  90, 7, -2, 1.30,   0);
-  addElement("Protactinum",   "Pa",  91, 7, -2, 1.50,   0);
-  addElement("Uranium",       "U",   92, 7, -2, 1.38,   0);
-  addElement("Neptunium",     "Np",  93, 7, -2, 1.36,   0);
-  addElement("Plutonium",     "Pu",  94, 7, -2, 1.28,   0);
-  addElement("Americium",     "Am",  95, 7, -2, 1.30,   0);
-  addElement("Curium",        "Cm",  96, 7, -2, 1.30,   0);
-  addElement("Berkelium",     "Bk",  97, 7, -2, 1.30,   0);
-  addElement("Californium",   "Cf",  98, 7, -2, 1.30,   0);
-  addElement("Einsteinium",   "Es",  99, 7, -2, 1.30,   0);
-  addElement("Fermium",       "Fm", 100, 7, -2, 1.30,   0);
-  addElement("Mendelevium",   "Md", 101, 7, -2, 1.30,   0);
-  addElement("Nobelium",      "No", 102, 7, -2, 1.30,   0);
-  addElement("Lawrencium",    "Lr", 103, 7, -2, 0.00,   0);
-  addElement("Rutherfordium", "Rf", 104, 7,  4, 0.00,   0);
-  addElement("Dubnium",       "Db", 105, 7,  5, 0.00,   0);
-  addElement("Seaborgium",    "Sg", 106, 7,  6, 0.00,   0);
-  addElement("Bohrium",       "Bh", 107, 7,  7, 0.00,   0);
-  addElement("Hassium",       "Hs", 108, 7,  8, 0.00,   0);
-  addElement("Meitnerium",    "Mt", 109, 7,  9, 0.00,   0);
-  addElement("Darmstadtium",  "Ds", 110, 7, 10, 0.00,   0);
-  addElement("Roentgenium",   "Rg", 111, 7, 11, 0.00,   0);
-  addElement("Copernicium",   "Cn", 112, 7, 12, 0.00,   0);
-  addElement("Nihonium",      "Nh", 113, 7, 13, 0.00,   0);
-  addElement("Flerovium",     "Fl", 114, 7, 14, 0.00,   0);
-  addElement("Moscovium",     "Mc", 115, 7, 15, 0.00,   0);
-  addElement("Livermonium",   "Lv", 116, 7, 16, 0.00,   0);
-  addElement("Tennessine",    "Ts", 117, 7, 17, 0.00,   0);
-  addElement("Oganesson",     "Og", 118, 7, 18, 0.00,   0);
+  addElement("Radon",         "Rn",  86, 6, 18,   -1, 120);
+  addElement("Francium",      "Fr",  87, 7,  1, 0.70,  -1);
+  addElement("Radium",        "Fa",  88, 7,  2, 0.90,  -1);
+  addElement("Actinium",      "Ac",  89, 7, -2, 1.10,  -1);
+  addElement("Thorium",       "Th",  90, 7, -2, 1.30,  -1);
+  addElement("Protactinum",   "Pa",  91, 7, -2, 1.50,  -1);
+  addElement("Uranium",       "U",   92, 7, -2, 1.38,  -1);
+  addElement("Neptunium",     "Np",  93, 7, -2, 1.36,  -1);
+  addElement("Plutonium",     "Pu",  94, 7, -2, 1.28,  -1);
+  addElement("Americium",     "Am",  95, 7, -2, 1.30,  -1);
+  addElement("Curium",        "Cm",  96, 7, -2, 1.30,  -1);
+  addElement("Berkelium",     "Bk",  97, 7, -2, 1.30,  -1);
+  addElement("Californium",   "Cf",  98, 7, -2, 1.30,  -1);
+  addElement("Einsteinium",   "Es",  99, 7, -2, 1.30,  -1);
+  addElement("Fermium",       "Fm", 100, 7, -2, 1.30,  -1);
+  addElement("Mendelevium",   "Md", 101, 7, -2, 1.30,  -1);
+  addElement("Nobelium",      "No", 102, 7, -2, 1.30,  -1);
+  addElement("Lawrencium",    "Lr", 103, 7, -2,   -1,  -1);
+  addElement("Rutherfordium", "Rf", 104, 7,  4,   -1,  -1);
+  addElement("Dubnium",       "Db", 105, 7,  5,   -1,  -1);
+  addElement("Seaborgium",    "Sg", 106, 7,  6,   -1,  -1);
+  addElement("Bohrium",       "Bh", 107, 7,  7,   -1,  -1);
+  addElement("Hassium",       "Hs", 108, 7,  8,   -1,  -1);
+  addElement("Meitnerium",    "Mt", 109, 7,  9,   -1,  -1);
+  addElement("Darmstadtium",  "Ds", 110, 7, 10,   -1,  -1);
+  addElement("Roentgenium",   "Rg", 111, 7, 11,   -1,  -1);
+  addElement("Copernicium",   "Cn", 112, 7, 12,   -1,  -1);
+  addElement("Nihonium",      "Nh", 113, 7, 13,   -1,  -1);
+  addElement("Flerovium",     "Fl", 114, 7, 14,   -1,  -1);
+  addElement("Moscovium",     "Mc", 115, 7, 15,   -1,  -1);
+  addElement("Livermonium",   "Lv", 116, 7, 16,   -1,  -1);
+  addElement("Tennessine",    "Ts", 117, 7, 17,   -1,  -1);
+  addElement("Oganesson",     "Og", 118, 7, 18,   -1,  -1);
 }
 
 /*
