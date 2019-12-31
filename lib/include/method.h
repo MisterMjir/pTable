@@ -1,15 +1,15 @@
-#ifndef METHOD
-#define METHOD
+#ifndef PTABLE_METHOD
+#define PTABLE_METHOD
 
 #include <string>
 #include <vector>
 
-#define METHOD_ARGS const std::vector<std::string> &
+#define PTABLE_METHOD_ARGS const std::vector<std::string> &
 
 struct Method
 {
   std::string name;
-  void (*method)(METHOD_ARGS);
+  void (*method)(PTABLE_METHOD_ARGS);
   unsigned int argc;
   std::string info;
   void (*help)();

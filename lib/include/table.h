@@ -1,5 +1,5 @@
-#ifndef TABLE
-#define TABLE
+#ifndef PTABLE_TABLE
+#define PTABLE_TABLE
 
 #include <vector>
 #include <string>
@@ -21,7 +21,7 @@ public:
   // Print commands
   static void printElement(Element*);
   static void printElements();
-  static void help(METHOD_ARGS args);
+  static void help(PTABLE_METHOD_ARGS args);
 private:
   Table();
   ~Table();
@@ -31,12 +31,12 @@ private:
   static void addElements();
   static void addElement(STR_PARAM name, STR_PARAM symbol, uint8_t atomicNumber, int8_t period, int8_t group, float electronegativity, short int radius);
   // Add Methods
-  static void addMethod(STR_PARAM name, void (*method)(METHOD_ARGS), int argc, STR_PARAM info, void (*help)());
+  static void addMethod(STR_PARAM name, void (*method)(PTABLE_METHOD_ARGS), int argc, STR_PARAM info, void (*help)());
   static void addMethods();
 
   // Commands
-  static void displayElement(METHOD_ARGS args);
-  static void compareElements(METHOD_ARGS args);
+  static void displayElement(PTABLE_METHOD_ARGS args);
+  static void compareElements(PTABLE_METHOD_ARGS args);
 
   // Data Members
   static std::vector<Element*> table;

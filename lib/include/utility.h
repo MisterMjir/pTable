@@ -1,12 +1,14 @@
-#ifndef UTILITY
-#define UTILITY
+#ifndef PTABLE_UTILITY
+#define PTABLE_UTILITY
 
 #include <vector>
 #include <cctype>
 #include <string>
+#include <fstream>
 #include "method.h"
 
 #define STR_PARAM const std::string &
+#define VECTOR_STR std::vector<std::string>
 
 namespace pTable
 {
@@ -16,7 +18,7 @@ namespace pTable
 	 * Dummy function that does nothing
 	 */
 	void doNothing() {}
-	void doNothing(METHOD_ARGS) {}
+	void doNothing(PTABLE_METHOD_ARGS) {}
 
 	/*
 	 * bool checkstrnocase()
@@ -37,9 +39,9 @@ namespace pTable
 	 * -----------------------------------------
 	 * Separate a string into a vector of substrings separated by whatever character
 	 */
-	std::vector<std::string> seperateString(std::string str, std::string sepStr)
+	VECTOR_STR seperateString(std::string str, std::string sepStr)
 	{
-		std::vector<std::string> list;
+		VECTOR_STR list;
 		std::string word = "";
 
 		// Get the args
@@ -58,6 +60,46 @@ namespace pTable
 
 		return list;
 	}
+
+	/*
+	 * std::vector<std::string> readCSV()
+	 * ----------------------------------
+	 * Stores every value of a .csv file into a vector of strings
+	 * ----------------------------------
+	 * PARAMS
+	 * std::string filepath | The path of the file
+	 * int reserve | How much elements the vector should reserve for (NULL / 0 if unsure)
+	 */
+	 VECTOR_STR readCSV(STR_PARAM filepath, int reserve)
+	 {
+		 VECTOR_STR data;
+		 data.reserve(reserve);
+		 std::ifstream rFile;
+
+		 rFile.open(filepath);
+		 if (rFile.is_open())
+		 {
+			 std::string output = "";
+			 while (!rFile.eof())
+			 {
+				 std::string tempChar;
+				 tempChar = rFile.get();
+				 if (!tempChar.compare("\n") || !tempChar.compare(","))
+				 {
+					 data.push_back(output);
+					 output = "";
+				 }
+				 else
+				 {
+					 if (tempChar.compare(" "))
+					 	output += tempChar;
+				 }
+			 }
+		 }
+		 rFile.close();
+
+		 return data;
+	 }
 }
 
 #endif

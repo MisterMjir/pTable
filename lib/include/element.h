@@ -1,5 +1,5 @@
-#ifndef ELEMENT
-#define ELEMENT
+#ifndef PTABLE_ELEMENT
+#define PTABLE_ELEMENT
 
 #include <string>
 
